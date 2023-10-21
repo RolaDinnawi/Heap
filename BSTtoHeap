@@ -1,0 +1,77 @@
+import java.util.LinkedList;
+import java.util.Queue;
+
+class BSTtoMinHeap {
+    // Recursive function to insert a key into a BST
+    public static Node insert(Node root, int key) {
+        if (root == null) return new Node(key);
+        if (key < root.data) root.left = insert(root.left, key);
+        else root.right = insert(root.right, key);
+        return root;
+    }
+
+    private static void printSideways(Node r, String indent) {
+        if (r != null) {
+            printSideways(r.right, indent + "    ");
+            System.out.println(indent + r.data);
+            printSideways(r.left, indent + "    ");
+        }
+    }
+
+    // Function to perform inorder traversal on a given binary tree and
+    // enqueue all nodes (in encountered order)
+    public static void inorder(Node root, Queue<Integer> keys) {
+        if (root == null) {
+            return;
+        }
+        inorder(root.left, keys);
+        keys.add(root.data);
+        inorder(root.right, keys);
+    }
+
+    // Function to perform preorder traversal on a given binary tree.
+    // Assign each encountered node with the next key from the queue
+    public static void preorder(Node root, Queue<Integer> keys) {
+        // base case: empty tree
+        if (root == null) {
+            return;
+        }
+        // replace the root's key value with the next key from the queue
+        root.data = keys.poll();
+        // process left subtree
+        preorder(root.left, keys);
+        // process right subtree
+        preorder(root.right, keys);
+    }
+
+    // Function to convert a BST into a min-heap
+    public static void convert(Node root) {
+        Queue<Integer> q = new LinkedList<>();
+        inorder(root, q);
+        preorder(root, q);
+    }
+
+    public static void main(String[] args) {
+        int[] keys = { 5, 3, 2, 4, 8, 6, 10 };
+
+        /*
+         * Construct the following BST
+         *         5
+         *     /       \
+         *    3         8
+         *  /   \     /   \
+         * 2     4   6    10
+         */
+
+        Node root = null;
+        for (int key : keys) {
+            root = insert(root, key);
+        }
+
+        System.out.println("Before Converting");
+        printSideways(root, " ");
+        System.out.println("After Converting");
+        convert(root);
+        printSideways(root, " ");
+    }
+}
